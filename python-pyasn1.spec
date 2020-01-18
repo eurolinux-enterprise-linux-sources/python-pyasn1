@@ -9,7 +9,7 @@
 
 Name:           python-pyasn1
 Version:        0.1.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        ASN.1 tools for Python
 License:        BSD
 Group:          System Environment/Libraries
@@ -135,6 +135,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 0.1.6-2
+- Mass rebuild 2013-12-27
+
 * Sat Feb 16 2013 Jamie Nguyen <jamielinux@fedoraproject.org> - 0.1.6-1
 - update to upstream release 0.1.6
 - update modules to 0.0.4
