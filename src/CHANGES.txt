@@ -1,3 +1,95 @@
+Revision 0.1.9, released 28-09-2015
+-----------------------------------
+
+- Wheel distribution format now supported.
+- Extensions added to text files, CVS attic flushed.
+- Fix to make uninitilaized pyasn1 objects failing properly on hash().
+- Fix to ObjectIdentifier initialization from unicode string.
+- Fix to CER/DER Boolean decoder - fail on non single-octet payload.
+
+Revision 0.1.8, released 22-06-2015
+-----------------------------------
+
+- ObjectIdentifier codec fixed to work properly with arc 0 and arc 2 values.
+- Explicit limit on ObjectIdentifier arc value size removed.
+- Unicode initializer support added to OctetString type and derivatives.
+- New prettyPrintType() abstract method implemented to base pyasn1 types
+  to facilitate encoding errors analisys.
+- The __str__() method implemented to Tag, TagSet and TagMap classes to
+  ease encoding errors troubleshooting.
+  easing encoding errors
+- Fix to SEQUENCE and SET types to give them their private componentTypes
+  collection (which is a NamedTypes object) so that they won't collide in
+  a MT execution environment.
+- Missing T61String,ISO646String character types and ObjectDescriptor useful
+  type added.
+- Distribute is gone, switched to setuptools completely.
+- Missing NamedValues.__repr__() added.
+- The base.NoValue() class, that indicates uninitialized ASN.1 object,
+  made public.
+- The base.NoValue() class instances now support __repr__() what makes
+  possible to perform repr() on uninitialized pyasn1 types objects.
+- When comparing ASN.1 types, by-tag and/or by-constraints matching
+  can now be performed with the isSuperTypeOf()/isSameTypeWith() optional
+  flags.
+- Constructed types now verify their consistency by invoking 
+  isSameTypeWith(matchTags=True, matchConstraints=False) and
+  isSuperTypeOf(matchTags=False, matchConstraints=True) for each of their
+  components rather than isSuperTypeOf() as it used to be. Constriants check 
+  could be enforced to isSameTypeWith() with the strictConstraints=True
+  constructed classes attribute.
+- Constructed types can now be initialized with new .setComponents() method
+  which accepts both var-args and keyword-args. Default repr() modified to
+  reflect this change.
+- NamedTypes() and NamedValues() made comparable.
+- Test coverage extended to cover pyasn1 types __repr__() function.
+- The abs(Integer()) & abs(Real()) operation now returns respective pyasn1 
+  type, not a Python type.
+- More Python magic methods implementations added to Integer & Real classes
+  (e.g.  __pos__, __neg__, __round__, __floor__, __ceil__, __trunc__)
+- The Integer.__invert__ Python magic method implemented.
+- The OctetString.__int__() and .__float__() magic methods implemented.
+- Handle the case of null writer at Debug printer.
+- BitString encoder/decoder performance improved.
+- Built-in debugging is now based on Python logging module.
+- Fix to NamedType.__repr__() to work properly.
+- Fixes to __repr__() implementation of many built-in ASN.1 types to take into
+  account all of their initializers such as tagSet, subtypeSpec etc.
+- String typed float initializer to REAL type now supported.
+- Float typed mantissa initializer to REAL type for base 2 added.
+- Encoding bases 8 and 16 support for REAL type binary encoder added.
+- More strict CER/DER encoders added for GeneralizedTime and UTCTime types.
+- Asn1Item.hasValue() added to easily distinguish initalized ASN.1 objects
+  from uninitialized ones (e.g. pure types).
+- Fix to REAL type binary decoder to handle different bases and scale factor.
+- Fix to TagSet.repr() to include [obsolete] baseTag information.
+- Fix to broken REAL type decoding handling.
+- Fix to BitString and OctetString decoders dealing with constructed
+  encoding -- it used to be possible to embed other types in substrate.
+- Fix to end-of-octest sentinel handling:
+  * require strict two-zeros sentinel encoding
+  * recognize EOO sentinel only when explicitly requested by caller
+    of the decoder via allowEoo=True parameter (warning: API change)
+- DER codec hardened not to tolerate indefinite length encoding/decoding.
+
+Revision 0.1.7
+--------------
+
+- License updated to vanilla BSD 2-Clause to ease package use
+  (http://opensource.org/licenses/BSD-2-Clause).
+- Test suite made discoverable by unittest/unittest2 discovery feature.
+- Fix to decoder working on indefinite length substrate -- end-of-octets
+  marker is now detected by both tag and value. Otherwise zero values may
+  interfere with end-of-octets marker.
+- Fix to decoder to fail in cases where tagFormat indicates inappropriate
+  format for the type (e.g. BOOLEAN is always PRIMITIVE, SET is always 
+  CONSTRUCTED and OCTET STRING is either of the two)
+- Fix to REAL type encoder to force primitive encoding form encoding.
+- Fix to CHOICE decoder to handle explicitly tagged, indefinite length
+  mode encoding
+- Fix to REAL type decoder to handle negative REAL values correctly. Test
+  case added.
+
 Revision 0.1.6
 --------------
 

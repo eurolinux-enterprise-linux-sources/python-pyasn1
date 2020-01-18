@@ -4,6 +4,9 @@
    A pure-Python implementation of ASN.1 types and DER/BER/CER codecs (X.208).
 """
 
+import os
+import sys
+
 classifiers = """\
 Development Status :: 5 - Production/Stable
 Environment :: Console
@@ -23,52 +26,40 @@ Topic :: Security :: Cryptography
 Topic :: Software Development :: Libraries :: Python Modules
 """
 
-def howto_install_distribute():
-    print("""
-   Error: You need the distribute Python package!
-
-   It's very easy to install it, just type (as root on Linux):
-
-   wget http://python-distribute.org/distribute_setup.py
-   python distribute_setup.py
-
-   Then you could make eggs from this package.
-""")
-
 def howto_install_setuptools():
     print("""
    Error: You need setuptools Python package!
 
    It's very easy to install it, just type (as root on Linux):
 
-   wget http://peak.telecommunity.com/dist/ez_setup.py
+   wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py
    python ez_setup.py
 
    Then you could make eggs from this package.
 """)
 
+if sys.version_info[:2] < (2, 4):
+    print("ERROR: this package requires Python 2.4 or later!")
+    sys.exit(1)
+
 try:
-    from setuptools import setup
+    from setuptools import setup, Command
     params = {
         'zip_safe': True
-        }    
+    }    
 except ImportError:
-    import sys
     for arg in sys.argv:
-        if arg.find('egg') != -1:
-            if sys.version_info[0] > 2:
-                howto_install_distribute()
-            else:
-                howto_install_setuptools()
+        if 'egg' in arg:
+            howto_install_setuptools()
             sys.exit(1)
-    from distutils.core import setup
+    from distutils.core import setup, Command
     params = {}
 
 doclines = [ x.strip() for x in __doc__.split('\n') if x ]
 
 params.update( {
     'name': 'pyasn1',
-    'version': open('pyasn1/__init__.py').read().split('\'')[1],
+    'version': open(os.path.join('pyasn1','__init__.py')).read().split('\'')[1],
     'description': doclines[0],
     'long_description': ' '.join(doclines[1:]),
     'maintainer': 'Ilya Etingof <ilya@glas.net>',
@@ -85,6 +76,29 @@ params.update( {
                   'pyasn1.codec.ber',
                   'pyasn1.codec.cer',
                   'pyasn1.codec.der' ]
-      } )
+} )
+
+# handle unittest discovery feature
+if sys.version_info[0:2] < (2, 7) or \
+   sys.version_info[0:2] in ( (3, 0), (3, 1) ):
+    try:
+        import unittest2 as unittest
+    except ImportError:
+        unittest = None
+else:
+    import unittest
+
+if unittest:
+    class PyTest(Command):
+        user_options = []
+
+        def initialize_options(self): pass
+        def finalize_options(self): pass
+
+        def run(self):
+            suite = unittest.defaultTestLoader.discover('.')
+            unittest.TextTestRunner(verbosity=2).run(suite)
+
+    params['cmdclass'] = { 'test': PyTest }
 
 setup(**params)

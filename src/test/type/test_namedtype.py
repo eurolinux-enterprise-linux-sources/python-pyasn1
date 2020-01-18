@@ -1,18 +1,23 @@
 from pyasn1.type import namedtype, univ
 from pyasn1.error import PyAsn1Error
-try:
+from sys import version_info
+if version_info[0:2] < (2, 7) or \
+   version_info[0:2] in ( (3, 0), (3, 1) ):
+    try:
+        import unittest2 as unittest
+    except ImportError:
+        import unittest
+else:
     import unittest
-except ImportError:
-    raise PyAsn1Error(
-        'PyUnit package\'s missing. See http://pyunit.sourceforge.net/'
-        )
 
 class NamedTypeCaseBase(unittest.TestCase):
     def setUp(self):
-        self.e = namedtype.NamedType('age', univ.Integer())
+        self.e = namedtype.NamedType('age', univ.Integer(0))
     def testIter(self):
         n, t = self.e
         assert n == 'age' or t == univ.Integer(), 'unpack fails'
+    def testRepr(self):
+        assert eval(repr(self.e), { 'NamedType': namedtype.NamedType, 'Integer': univ.Integer}) == self.e, 'repr() fails'
 
 class NamedTypesCaseBase(unittest.TestCase):
     def setUp(self):
@@ -21,6 +26,8 @@ class NamedTypesCaseBase(unittest.TestCase):
             namedtype.OptionalNamedType('age', univ.Integer(0)),
             namedtype.NamedType('family-name', univ.OctetString(''))
             )
+    def testRepr(self):
+        assert eval(repr(self.e), { 'NamedTypes': namedtype.NamedTypes, 'NamedType': namedtype.NamedType, 'OptionalNamedType': namedtype.OptionalNamedType, 'Integer': univ.Integer, 'OctetString': univ.OctetString }) == self.e, 'repr() fails'
     def testIter(self):
         for t in self.e:
             break

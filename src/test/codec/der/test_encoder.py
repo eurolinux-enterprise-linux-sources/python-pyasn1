@@ -2,18 +2,28 @@ from pyasn1.type import namedtype, univ
 from pyasn1.codec.der import encoder
 from pyasn1.compat.octets import ints2octs
 from pyasn1.error import PyAsn1Error
-try:
+from sys import version_info
+if version_info[0:2] < (2, 7) or \
+   version_info[0:2] in ( (3, 0), (3, 1) ):
+    try:
+        import unittest2 as unittest
+    except ImportError:
+        import unittest
+else:
     import unittest
-except ImportError:
-    raise PyAsn1Error(
-        'PyUnit package\'s missing. See http://pyunit.sourceforge.net/'
-        )
 
 class OctetStringEncoderTestCase(unittest.TestCase):
     def testShortMode(self):
         assert encoder.encode(
             univ.OctetString('Quick brown fox')
             ) == ints2octs((4, 15, 81, 117, 105, 99, 107, 32, 98, 114, 111, 119, 110, 32, 102, 111, 120))
+    def testIndefMode(self):
+        try:
+            assert encoder.encode(univ.OctetString('Quick brown'), defMode=0)
+        except PyAsn1Error:
+            pass
+        else:
+            assert 0, 'Indefinite length encoding tolerated'
 
 class BitStringEncoderTestCase(unittest.TestCase):
     def testShortMode(self):
